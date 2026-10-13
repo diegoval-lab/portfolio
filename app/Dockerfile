@@ -1,8 +1,8 @@
 # Fase de construcción
 FROM node:20-alpine AS builder
 WORKDIR /app
-COPY package*.json ./
-RUN npm install --only=production
+COPY app.js package.json ./
+RUN npm install express --production
 
 # Fase final ligera
 FROM node:20-alpine AS runner
