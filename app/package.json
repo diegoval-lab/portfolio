@@ -1,0 +1,12 @@
+{
+  "name": "mi-app-node",
+  "version": "1.0.0",
+  "description": "App de prueba para Kubernetes y Terraform",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  dependencies": {
+    "express": "^4.19.2"
+  }
+}
