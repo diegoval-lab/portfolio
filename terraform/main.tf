@@ -29,7 +29,7 @@ resource "kubernetes_deployment" "app_deployment" {
       spec {
         container {
           image             = var.docker_image
-          image_pull_policy = "Never" # Fundamental para Minikube local
+          image_pull_policy = "IfNotPresent" # Fundamental para Minikube local
           name              = var.app_name
 
           port {
