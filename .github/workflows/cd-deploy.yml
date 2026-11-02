@@ -1,0 +1,53 @@
+name: CD - Deploy Infrastructure
+
+on:
+  workflow_run:
+    workflows: ["CI - Build and Security"] # Nombre exacto del primer workflow
+    types:
+      - completed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v4
+
+      - name: Descargar tag de la imagen
+        uses: actions/download-artifact@v4
+        with:
+          name: image-tag
+          path: .
+
+      - name: Leer tag de la imagen
+        id: image
+        run: |
+          IMAGE_TAG=$(cat image_tag.txt)
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+          echo "Usando imagen con tag: $IMAGE_TAG"
+
+      - name: Configurar entorno según la rama
+        id: set-env
+        run: |
+          if [[ "${{ github.ref_name }}" == "main" ]]; then
+            echo "ENV_FILE=prod.tfvars" >> $GITHUB_ENV
+            echo "ENVIRONMENT=pro" >> $GITHUB_ENV
+          else
+            echo "ENV_FILE=dev.tfvars" >> $GITHUB_ENV
+            echo "ENVIRONMENT=dev" >> $GITHUB_ENV
+          fi
+
+      - name: Configurar Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.0
+
+      - name: Inicializar Terraform
+        working-directory: ./terraform
+        run: terraform init
+
+      - name: Aplicar Infraestructura con Terraform
+        working-directory: ./terraform
+        run: |
+          echo "Desplegando entorno ${{ env.ENVIRONMENT }} con Terraform usando ${{ env.ENV_FILE }}"
+          terraform apply -var-file="${{ env.ENV_FILE }}" -auto-approve

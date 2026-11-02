@@ -1,10 +1,10 @@
-name: CI/CD Pipeline
+name: CI - Build and Security
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "develop" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "develop" ]
 
 jobs:
   build-and-security:
@@ -23,3 +23,13 @@ jobs:
           format: 'table'
           exit-code: '0'
           severity: 'CRITICAL,HIGH'
+
+      # Guardamos el hash del commit en un archivo temporal por si el CD lo necesita
+      - name: Guardar tag de imagen como artefacto
+        run: echo "${{ github.sha }}" > image_tag.txt
+
+      - name: Subir artefacto del tag
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-tag
+          path: image_tag.txt
