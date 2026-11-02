@@ -4,10 +4,16 @@ variable "app_name" {
   default     = "node-app"
 }
 
+variable "environment" {
+  type        = string
+  description = "Entorno de despliegue (dev o pro)"
+  default     = "dev"
+}
+
 variable "namespace" {
   type        = string
   description = "Namespace de Kubernetes donde se desplegará"
-  default     = "mi-portfolio-app"
+  default     = "mi-portfolio-app-dev"
 }
 
 variable "docker_image" {
@@ -20,4 +26,10 @@ variable "app_port" {
   type        = number
   description = "Puerto en el que escucha la aplicación"
   default     = 3000
+}
+
+variable "replica_count" {
+  type        = number
+  description = "Número de réplicas para el deployment (alta disponibilidad en pro)"
+  default     = 1
 }
